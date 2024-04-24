@@ -25,16 +25,14 @@ ENV NODE_ENV=production
 WORKDIR /opt/azurite
 
 # Default Workspace Volume
-VOLUME [ "/data" ]
+RUN mkdir -p /artifacts/logs
+VOLUME [ "/artifacts" ]
 
 COPY package*.json LICENSE NOTICE.txt ./
-
 COPY --from=builder /opt/azurite/dist/ dist/
 
 RUN npm pkg set scripts.prepare="echo no-prepare"
-
 RUN npm ci --unsafe-perm
-
 RUN npm install -g --unsafe-perm --loglevel verbose
 
 # Blob Storage Port
@@ -44,4 +42,4 @@ EXPOSE 10001
 # Table Storage Port
 EXPOSE 10002
 
-CMD ["azurite", "-l", "/data", "--blobHost", "0.0.0.0","--queueHost", "0.0.0.0", "--tableHost", "0.0.0.0"]
+CMD ["azurite", "-l", "/artifacts", "--blobHost", "0.0.0.0","--queueHost", "0.0.0.0", "--tableHost", "0.0.0.0"]
